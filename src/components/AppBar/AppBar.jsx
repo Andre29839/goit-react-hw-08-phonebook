@@ -9,11 +9,12 @@ import {
 } from './AppBar.styled';
 
 import { Spiner } from 'pages/ContactList/ContactList.styled';
-import { ContactList } from '../UserMenu/UserMenu';
+import { UserMenu } from '../UserMenu/UserMenu';
 import { useSelector } from 'react-redux';
+import { selectIsLogin } from 'redux/auth/selectors';
 
 export const AppBar = () => {
-  const { isLoaggedIn, isLoading } = useSelector(state => state.auth);
+  const { isLoaggedIn, isLoading } = useSelector(selectIsLogin);
 
   return (
     <header>
@@ -35,7 +36,7 @@ export const AppBar = () => {
           </div>
           <div>
             {isLoaggedIn ? (
-              <ContactList />
+              <UserMenu />
             ) : (
               <>
                 <Link to="/register">

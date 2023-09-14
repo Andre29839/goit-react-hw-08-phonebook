@@ -8,6 +8,7 @@ import { PrivateRoute } from './PrivateRoute';
 import { RestrictedRoute } from './RestrictedRoute';
 import { ToastContainer } from 'react-toastify';
 import { Spiner } from 'pages/ContactList/ContactList.styled';
+import { selectIsRefreshing } from 'redux/auth/selectors';
 
 const Register = lazy(() => import('../pages/Register/Register'));
 const Home = lazy(() => import('../pages/Home/Home'));
@@ -17,17 +18,11 @@ const Contactlist = lazy(() => import('../pages/ContactList/ContactList'));
 export const App = () => {
   const dispatch = useDispatch();
 
-  const token = useSelector(state => {
-    return state.auth.token;
-  });
-
   useEffect(() => {
-    if (token) {
-      dispatch(refreshUser());
-    }
-  }, [dispatch, token]);
+    dispatch(refreshUser());
+  }, [dispatch]);
 
-  const { isRefreshing } = useSelector(state => state.auth);
+  const isRefreshing = useSelector(selectIsRefreshing);
 
   return !isRefreshing ? (
     <>

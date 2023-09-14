@@ -55,6 +55,9 @@ export const refreshUser = createAsyncThunk(
   'auth/refreshUser',
   async (_, { rejectWithValue, getState }) => {
     const { token } = getState().auth;
+    if (!token) {
+      return rejectWithValue('no user');
+    }
     token && setAuthHeader(token);
 
     try {

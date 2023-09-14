@@ -12,11 +12,12 @@ import {
 } from './ContactForm.styled';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useFormik } from 'formik';
+import { selectContacts, selectIsLoading } from 'redux/contacts/selectors';
 
 export const ContactForm = () => {
   const [open, setOpen] = useState(false);
-  const currentContacts = useSelector(state => state.contacts.items);
-  const loader = useSelector(state => state.contacts.isLoading);
+  const currentContacts = useSelector(selectContacts);
+  const loader = useSelector(selectIsLoading);
   const dispatch = useDispatch();
 
   const handleSubmit = values => {

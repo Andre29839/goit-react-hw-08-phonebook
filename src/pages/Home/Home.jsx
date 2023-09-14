@@ -1,3 +1,4 @@
+import { selectIsLoaggedIn } from 'redux/auth/selectors';
 import {
   Title,
   HomeUserGroup,
@@ -13,7 +14,7 @@ import {
 import { useSelector } from 'react-redux';
 
 export default function Home() {
-  const { isLoggedIn } = useSelector(state => state.auth);
+  const { isLoggedIn } = useSelector(selectIsLoaggedIn);
 
   return (
     <Section>

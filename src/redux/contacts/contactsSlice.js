@@ -6,7 +6,6 @@ import {
   redactContact,
 } from './operations';
 
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut } from '../auth/operations';
 
@@ -18,12 +17,6 @@ const handlePending = state => {
 const handleRejected = (state, action) => {
   state.isLoading = false;
   state.error = action.payload;
-
-  toast.error(
-    `${action.payload}` === 'Network Error'
-      ? `${action.payload}`
-      : 'Something went wrong. Check your data and try again'
-  );
 };
 
 const contactsSlice = createSlice({
