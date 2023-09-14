@@ -1,20 +1,24 @@
-// https://64fc6d20605a026163ae7ae8.mockapi.io/contacts/contacts
-
-import axios from 'axios';
-
-axios.defaults.baseURL = 'https://64fc825c605a026163ae90f0.mockapi.io/contacts';
+import { instance } from 'redux/auth/operations';
 
 export const getContacts = async () => {
-  const response = await axios.get('');
+  const response = await instance.get('/contacts');
   return response.data;
 };
 
 export const postContact = async contact => {
-  const response = await axios.post('', contact);
+  const response = await instance.post('/contacts', contact);
   return response.data;
 };
 
 export const removeContact = async id => {
-  const response = await axios.delete(`/${id}`);
+  const response = await instance.delete(`/contacts/${id}`);
+  return response.data;
+};
+
+export const redactionContact = async data => {
+  const response = await instance.patch(`/contacts/${data.id}`, {
+    name: data.name,
+    number: data.number,
+  });
   return response.data;
 };

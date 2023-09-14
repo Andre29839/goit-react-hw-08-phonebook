@@ -1,60 +1,103 @@
 import { useState } from 'react';
-import { addContact } from 'redux/operations';
+import { addContact } from 'redux/contacts/operations';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts } from 'redux/selector';
-import css from './ContactForm.module.css';
+import {
+  FormWrap,
+  AddModalBtn,
+  UserIcon,
+  PhoneIcon,
+  InputForm,
+  AddModal,
+  OpenAddModal,
+} from './ContactForm.styled';
+import { PlusCircleOutlined } from '@ant-design/icons';
+import { useFormik } from 'formik';
 
 export const ContactForm = () => {
-  const [contact, setContact] = useState({ name: '', number: '' });
-  const contacts = useSelector(selectContacts);
+  const [open, setOpen] = useState(false);
+  const currentContacts = useSelector(state => state.contacts.items);
+  const loader = useSelector(state => state.contacts.isLoading);
   const dispatch = useDispatch();
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const isExist = contacts.find(
-      el => el.name.toLowerCase() === contact.name.toLowerCase()
-    );
-    if (isExist) return alert(`${contact.name} is already in contacts`);
-    dispatch(addContact(contact));
-    setContact({ name: '', number: '' });
+  const handleSubmit = values => {
+    const formatTel = () => {
+      const number = values.phone;
+      const phoneLength = number.length;
+      if (phoneLength < 7) {
+        return `(${number.slice(0, 3)}) ${number.slice(3)}`;
+      }
+      return `(${number.slice(0, 3)}) ${number.slice(3, 6)}-${number.slice(
+        6,
+        10
+      )}`;
+    };
+
+    const newContact = { name: values.name, number: formatTel() };
+    const newContactName = newContact.name.toLowerCase();
+
+    if (
+      currentContacts.find(
+        contact => contact.name.toLowerCase() === newContactName
+      )
+    ) {
+      alert(`${newContact.name} is already in contact`);
+    } else {
+      dispatch(addContact(newContact));
+      if (!loader) {
+        setOpen(false);
+      }
+    }
   };
 
-  const handleOnChange = e => {
-    const { name, value } = e.target;
-    setContact({ ...contact, [name]: value });
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      phone: '',
+    },
+    onSubmit: handleSubmit,
+  });
+
+  const showModal = () => {
+    setOpen(true);
+    formik.values.name = '';
+    formik.values.phone = '';
   };
 
   return (
-    <form className={css.form} onSubmit={handleSubmit}>
-      <label className={css.label}>
-        Name
-        <input
-          className={css.input}
-          value={contact.name}
-          onChange={handleOnChange}
-          type="text"
-          name="name"
-          pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-          required
-        />
-      </label>
-      <label className={css.label}>
-        Number
-        <input
-          className={css.input}
-          value={contact.number}
-          onChange={handleOnChange}
-          type="tel"
-          name="number"
-          pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
-          title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-          required
-        />
-      </label>
-      <button className={css.button} type="submit">
+    <>
+      <OpenAddModal onClick={showModal} title="Add new contact">
+        <PlusCircleOutlined />
         Add contact
-      </button>
-    </form>
+      </OpenAddModal>
+      <AddModal
+        footer={null}
+        title="Add new contact"
+        open={open}
+        onCancel={() => setOpen(false)}
+      >
+        <FormWrap onSubmit={formik.handleSubmit}>
+          <InputForm
+            prefix={<UserIcon />}
+            name="name"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            type="text"
+            placeholder="Name"
+          />
+          <InputForm
+            prefix={<PhoneIcon />}
+            name="phone"
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            type="text"
+            placeholder="Number"
+          />
+
+          <AddModalBtn type="primary" htmlType="submit">
+            Create contact
+          </AddModalBtn>
+        </FormWrap>
+      </AddModal>
+    </>
   );
 };
